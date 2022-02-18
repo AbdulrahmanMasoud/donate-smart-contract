@@ -14,8 +14,15 @@ contract Donate is DonateInterface {
     mapping(uint=>address) private donateers; // عشان احفظ فيها المتبرعين
     mapping(address=>bool) private saveDonateer; // عشان لو المتبرع ده دفع تبقا ب ترو عشان استخدمها لو هيدفع مره تانيه محفظهوش تاني
 
+    // هعمل موديفاير اللي هو زي الميدل وير بيتأكد ان المتبرع ده معاه فلوس في الحساب ولا لا
+
+    modifier donateerBalance(){
+        require((msg.sender.balance)>0,"You dont have balance in your accout pleas charge it.");
+        _;
+    }
+
     // ميثود التبرع
-    function addFunds() override external payable{
+    function addFunds() override external donateerBalance payable{
         //1- اجيب الهاش بتاع المتبرع
         //2- اتأكد ان هو مش في قائمه المتبرعين
         //3- اضيفه في قائمه المتبرعين
@@ -30,5 +37,10 @@ contract Donate is DonateInterface {
             donateers[donateerId] = donateer;
             saveDonateer[donateer] = true;
         }
+    }
+
+    // دي بستخدمها عشان اجيب اللي اتبرع بالاي دي اللي انا حفظته
+    function getDonateerByIndex(uint _index) external view returns(address){
+        return donateers[_index];
     }
 }
